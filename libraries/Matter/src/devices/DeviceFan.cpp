@@ -68,6 +68,12 @@ void DeviceFan::SetPercentCurrent(uint8_t percent)
 
 void DeviceFan::SetFanMode(uint8_t fan_mode)
 {
+  if (fan_mode == (uint8_t)fan_mode_t::On) {
+    fan_mode = (uint8_t)fan_mode_t::High;
+  } else if (fan_mode == (uint8_t)fan_mode_t::Smart) {
+    fan_mode = (uint8_t)fan_mode_t::High;
+  }
+  
   bool changed = this->current_fan_mode != fan_mode;
   ChipLogProgress(DeviceLayer, "FanDevice[%s]: new mode='%d'", this->device_name, fan_mode);
   this->current_fan_mode = (fan_mode_t)fan_mode;
@@ -83,6 +89,10 @@ void DeviceFan::SetFanMode(uint8_t fan_mode)
 
   // Adjust the percentage to the selected mode
   switch ((fan_mode_t)fan_mode) {
+    case fan_mode_t::Off:
+      this->SetPercentSetting(0);
+      break;
+    
     case fan_mode_t::Low:
       this->SetPercentSetting(20);
       break;
