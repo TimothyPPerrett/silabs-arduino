@@ -40,11 +40,11 @@ public:
   DeviceFan(const char* device_name);
 
   uint8_t GetPercentSetting();
-  void SetPercentSetting(uint8_t percent);
+  void SetPercentSetting(uint8_t percent, bool setMode = false);
   uint8_t GetPercentCurrent();
   void SetPercentCurrent(uint8_t percent);
 
-  void SetFanMode(uint8_t fan_mode);
+  void SetFanMode(uint8_t fan_mode, bool setPercent = true);
   uint8_t GetFanMode();
   uint8_t GetFanModeSequence();
   uint8_t GetFanSpeedMax();

@@ -39,7 +39,7 @@ uint8_t DeviceFan::GetPercentSetting()
   return this->current_percent;
 }
 
-void DeviceFan::SetPercentSetting(uint8_t percent)
+void DeviceFan::SetPercentSetting(uint8_t percent, bool setMode)
 {
   if (percent > 100) {
     percent = 100;
@@ -54,6 +54,20 @@ void DeviceFan::SetPercentSetting(uint8_t percent)
     this->HandleFanDeviceStatusChanged(kChanged_PercentCurrent);
     CallDeviceChangeCallback();
   }
+
+  if (!changed || !setMode) {
+    return;
+  }
+
+  if (percent == 0) {
+    SetFanMode((uint8_t)fan_mode_t::Off, false);
+  } else if (percent <= 33) {
+    SetFanMode((uint8_t)fan_mode_t::Low, false);
+  } else if (percent <= 66) {
+    SetFanMode((uint8_t)fan_mode_t::Med, false);
+  } else {
+    SetFanMode((uint8_t)fan_mode_t::High, false);
+  }
 }
 
 uint8_t DeviceFan::GetPercentCurrent()
@@ -66,7 +80,7 @@ void DeviceFan::SetPercentCurrent(uint8_t percent)
   (void)percent;
 }
 
-void DeviceFan::SetFanMode(uint8_t fan_mode)
+void DeviceFan::SetFanMode(uint8_t fan_mode, bool setPercent)
 {
   if (fan_mode == (uint8_t)fan_mode_t::On) {
     fan_mode = (uint8_t)fan_mode_t::High;
@@ -83,26 +97,26 @@ void DeviceFan::SetFanMode(uint8_t fan_mode)
     CallDeviceChangeCallback();
   }
 
-  if (!changed) {
+  if (!changed || !setPercent) {
     return;
   }
 
   // Adjust the percentage to the selected mode
   switch ((fan_mode_t)fan_mode) {
     case fan_mode_t::Off:
-      this->SetPercentSetting(0);
+      this->SetPercentSetting(0, false);
       break;
     
     case fan_mode_t::Low:
-      this->SetPercentSetting(20);
+      this->SetPercentSetting(20, false);
       break;
 
     case fan_mode_t::Med:
-      this->SetPercentSetting(50);
+      this->SetPercentSetting(50, false);
       break;
 
     case fan_mode_t::High:
-      this->SetPercentSetting(100);
+      this->SetPercentSetting(100, false);
       break;
 
     default:
@@ -205,11 +219,11 @@ EmberAfStatus DeviceFan::HandleWriteEmberAfAttribute(ClusterId clusterId,
   }
 
   if (attributeId == PercentSetting::Id) {
-    this->SetPercentSetting(*buffer);
+    this->SetPercentSetting(*buffer, true);
   } else if (attributeId == SpeedSetting::Id) {
-    this->SetPercentSetting(*buffer);
+    this->SetPercentSetting(*buffer, true);
   } else if (attributeId == FanMode::Id) {
-    this->SetFanMode(*buffer);
+    this->SetFanMode(*buffer, true);
   } else {
     return EMBER_ZCL_STATUS_FAILURE;
   }
