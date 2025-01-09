@@ -80,6 +80,26 @@ void DeviceFan::SetPercentCurrent(uint8_t percent)
   (void)percent;
 }
 
+uint8_t DeviceFan::GetSpeedSetting()
+{
+  return PercentToSpeed(this->GetPercentSetting());
+}
+
+void DeviceFan::SetSpeedSetting(uint8_t speed, bool setMode)
+{
+  this->SetPercentSetting(this->SpeedToPercent(speed), setMode);
+}
+
+uint8_t DeviceFan::GetSpeedCurrent()
+{
+  return this->PercentToSpeed(this->GetPercentCurrent());
+}
+
+void DeviceFan::SetSpeedCurrent(uint8_t speed)
+{
+  this->SetPercentCurrent(this->SpeedToPercent(speed));
+}
+
 void DeviceFan::SetFanMode(uint8_t fan_mode, bool setPercent)
 {
   if (fan_mode == (uint8_t)fan_mode_t::On) {
@@ -185,10 +205,10 @@ EmberAfStatus DeviceFan::HandleReadEmberAfAttribute(ClusterId clusterId,
     uint8_t speed_max = this->GetFanSpeedMax();
     memcpy(buffer, &speed_max, sizeof(speed_max));
   } else if ((attributeId == SpeedSetting::Id) && (maxReadLength == 1)) {
-    uint8_t speed_setting = this->GetPercentSetting();
+    uint8_t speed_setting = this->GetSpeedSetting();
     memcpy(buffer, &speed_setting, sizeof(speed_setting));
   } else if ((attributeId == SpeedCurrent::Id) && (maxReadLength == 1)) {
-    uint8_t speed_current = this->GetPercentCurrent();
+    uint8_t speed_current = this->GetSpeedCurrent();
     memcpy(buffer, &speed_current, sizeof(speed_current));
   } else if ((attributeId == FeatureMap::Id) && (maxReadLength == 4)) {
     uint32_t featureMap = this->GetFanClusterFeatureMap();
@@ -221,7 +241,7 @@ EmberAfStatus DeviceFan::HandleWriteEmberAfAttribute(ClusterId clusterId,
   if (attributeId == PercentSetting::Id) {
     this->SetPercentSetting(*buffer, true);
   } else if (attributeId == SpeedSetting::Id) {
-    this->SetPercentSetting(*buffer, true);
+    this->SetSpeedSetting(*buffer, true);
   } else if (attributeId == FanMode::Id) {
     this->SetFanMode(*buffer, true);
   } else {
@@ -229,6 +249,16 @@ EmberAfStatus DeviceFan::HandleWriteEmberAfAttribute(ClusterId clusterId,
   }
 
   return EMBER_ZCL_STATUS_SUCCESS;
+}
+
+uint8_t DeviceFan::SpeedToPercent(uint8_t speed)
+{
+  (uint8_t) floorf((float)speed / (float)fan_speed_max * 100);
+}
+
+uint8_t DeviceFan::PercentToSpeed(uint8_t percent)
+{
+  return (uint8_t) ceilf(fan_speed_max * (percent * 0.01f));
 }
 
 void DeviceFan::HandleFanDeviceStatusChanged(Changed_t itemChangedMask)

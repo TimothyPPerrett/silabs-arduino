@@ -208,6 +208,34 @@ uint8_t MatterFan::get_percent()
 }
 
 /***************************************************************************//**
+ * Sets the fan's current speed
+ *
+ * @param[in] percent the requested fan speed
+ ******************************************************************************/
+void MatterFan::set_speed(uint8_t speed)
+{
+  if (!this->initialized) {
+    return;
+  }
+  PlatformMgr().LockChipStack();
+  this->fan_device->SetSpeedSetting(speed);
+  PlatformMgr().UnlockChipStack();
+}
+
+/***************************************************************************//**
+ * Gets the fan's current speed
+ *
+ * @return the fan's current speed
+ ******************************************************************************/
+uint8_t MatterFan::get_speed()
+{
+  if (!this->initialized) {
+    return 0;
+  }
+  return this->fan_device->GetSpeedSetting();
+}
+
+/***************************************************************************//**
  * Assignment operator to set the fan's current speed percentage
  *
  * @param[in] percent the requested fan speed percentage

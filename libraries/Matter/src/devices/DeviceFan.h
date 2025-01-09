@@ -44,6 +44,11 @@ public:
   uint8_t GetPercentCurrent();
   void SetPercentCurrent(uint8_t percent);
 
+  uint8_t GetSpeedSetting();
+  void SetSpeedSetting(uint8_t speed, bool setMode = false);
+  uint8_t GetSpeedCurrent();
+  void SetSpeedCurrent(uint8_t speed);
+
   void SetFanMode(uint8_t fan_mode, bool setPercent = true);
   uint8_t GetFanMode();
   uint8_t GetFanModeSequence();
@@ -71,6 +76,9 @@ public:
   };
 
 private:
+  uint8_t SpeedToPercent(uint8_t speed);
+  uint8_t PercentToSpeed(uint8_t percent);
+  
   void HandleFanDeviceStatusChanged(Changed_t itemChangedMask);
 
   uint8_t current_percent;

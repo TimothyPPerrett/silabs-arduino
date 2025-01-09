@@ -45,6 +45,8 @@ public:
   bool get_onoff();
   void set_percent(uint8_t percent);
   uint8_t get_percent();
+  void set_speed(uint8_t speed);
+  uint8_t get_speed();
   void operator=(uint8_t percent);
 
 private:
