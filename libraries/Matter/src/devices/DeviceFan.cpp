@@ -26,8 +26,10 @@
 
 #include "DeviceFan.h"
 
-DeviceFan::DeviceFan(const char* device_name) :
+DeviceFan::DeviceFan(const char* device_name,
+                     uint8_t speed_max) :
   Device(device_name),
+  fan_speed_max(speed_max),
   current_percent(0),
   current_fan_mode(fan_mode_t::Off)
 {

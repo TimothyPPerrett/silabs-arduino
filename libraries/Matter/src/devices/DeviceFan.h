@@ -37,7 +37,7 @@ public:
     kChanged_ModeSetting = kChanged_Last << 3,
   } Changed;
 
-  DeviceFan(const char* device_name);
+  DeviceFan(const char* device_name, uint8_t speed_max = 100u);
 
   uint8_t GetPercentSetting();
   void SetPercentSetting(uint8_t percent, bool setMode = false);
@@ -75,6 +75,8 @@ public:
     Smart
   };
 
+  const uint8_t fan_speed_max;
+
 private:
   uint8_t SpeedToPercent(uint8_t speed);
   uint8_t PercentToSpeed(uint8_t percent);
@@ -85,7 +87,6 @@ private:
   fan_mode_t current_fan_mode;
 
   static const uint8_t fan_mode_sequence        = 0u;   // Off/Low/Med/High
-  static const uint8_t fan_speed_max            = 100u; // 0-100%
   static const uint32_t fan_cluster_feature_map = 1u;   // 1-100 speeds supported
   static const uint16_t fan_cluster_revision    = 1u;
 };
